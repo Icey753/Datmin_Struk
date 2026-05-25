@@ -11,83 +11,37 @@ OUTPUT = "hasil_kategorisasi.xlsx"
 
 RULES: list[tuple[list[str], str]] = [
 
-    (["BERAS", "TOPI KOKI"], "Bahan Pokok"),
-    (["GULA", "GULAKU", "R/B GULA"], "Bahan Pokok"),
-    (["MINYAK", "BIMOLI", "SUNCO", "TROPICAL"], "Bahan Pokok"),
-    (["TELUR", "TLR"], "Bahan Pokok"),
-    (["TEPUNG", "SAJIKU"], "Bahan Pokok"),
-    (["SANTAN", "SUN KARA"], "Bahan Pokok"),
-    (["BLUE BAND"], "Bahan Pokok"),
+(["BERAS", "TOPI KOKI", "GULA", "GULAKU", "R/B GULA","R/LAUT", "MINYAK", "BIMOLI", "SUNCO", "TROPICAL", "TELUR", "TLR", "TEPUNG", "SAJIKU", "SANTAN", "SUN KARA", "BLUE BAND"], "Bahan Pokok"),
 
-    (["BAWANG MERAH", "BAWANG PUTIH"], "Bumbu & Rempah"),
-    (["CABE", "CABAI"], "Bumbu & Rempah"),
-    (["LENGKUAS", "LAOS"], "Bumbu & Rempah"),
-    (["DAUN JERUK", "DAUN BAWANG"], "Bumbu & Rempah"),
-    (["JINTEN", "KAPULAGA", "KAYU MANIS", "BIJI PALA", "BUNGA LAWANG", "ADAS"], "Bumbu & Rempah"),
-    (["TERASI"], "Bumbu & Rempah"),
-    (["MASAKO", "ROYCO", "TOTOLE", "KALDU"], "Bumbu & Rempah"),
-    (["KECAP", "KCPMNS", "KECAP MNS"], "Bumbu & Rempah"),
-    (["SAUS", "S/TIRAM", "SAUS TIRAM", "SAMBAL", "MAESTRO"], "Bumbu & Rempah"),
-    (["INDOFOOD B/R", "INDOFOOD SMB"], "Bumbu & Rempah"),
+(["BAWANG MERAH", "BAWANG PUTIH", "CABE", "CABAI", "LENGKUAS", "LAOS", "DAUN JERUK", "DAUN BAWANG", "JINTEN", "KAPULAGA", "KAYU MANIS", "BIJI PALA", "BUNGA LAWANG", "ADAS", "TERASI", "MASAKO", "ROYCO", "TOTOLE", "KALDU", "KECAP", "KCPMNS", "KECAP MNS", "SAUS", "S/TIRAM", "SAUS TIRAM", "SAMBAL", "MAESTRO", "INDOFOOD B/R", "INDOFOOD SMB"], "Bumbu & Rempah"),
 
-    (["BAYAM", "KANGKUNG", "CAISIM", "SAWI"], "Sayuran"),
-    (["WORTEL", "TOMAT", "TERONG", "BANGKUANG"], "Sayuran"),
-    (["JAGUNG MANIS"], "Sayuran"),
+(["BAYAM", "KANGKUNG", "CAISIM", "SAWI", "WORTEL", "TOMAT", "TERONG", "BANGKUANG", "JAGUNG MANIS"], "Sayuran"),
 
-    (["MANGGA", "NANAS", "ANGGUR", "JAMBU", "LEMON IMPORT", "PEAR"], "Buah"),
+(["MANGGA", "NANAS", "ANGGUR", "JAMBU", "LEMON IMPORT", "PEAR"], "Buah"),
 
-    (["DAGING", "BAKSO"], "Daging & Olahan"),
-    (["IKAN", "CUMI", "UDANG", "R/LAUT"], "Ikan & Seafood"),
-    (["TEMPE"], "Daging & Olahan"),
+(["DAGING", "BAKSO", "KNZLR", "TEMPE"], "Daging & Olahan"),
 
-    (["NUGGET", "HATO", "BELFOODS", "NUG"], "Frozen Food"),
+(["IKAN", "CUMI", "UDANG" ], "Ikan & Seafood"),
 
-    (["INDOMILK", "FRISIAN", "CIMORY", "OVALTINE"], "Susu & Olahan Susu"),
-    (["OATSIDE"], "Susu & Olahan Susu"),
+(["NUGGET", "HATO", "BELFOODS", "NUG", "SS"], "Frozen Food"),
 
-    (["INDOMIE", "POP MIE", "MI GEMEZ", "SEDAAP MIE", "SDP MI", "SOTO MI", "IDM M/GORENG"], "Mie Instan"),
+(["INDOMILK", "FRISIAN", "CIMORY", "OVALTINE", "OATSIDE"], "Susu & Olahan Susu"),
 
-    (["BISKUAT", "ROMA", "TANGO", "MONDE", "A.T.B MARIE"], "Snack"),
-    (["CHIKI", "KUSUKA", "KRAKER", "LRSST PILUS", "TOS TOS", "CRUNCHY"], "Snack"),
-    (["CHOKI CHOKI", "LOTTE", "SERENA", "GERY"], "Snack"),
-    (["MR.POTATO", "NABATI"], "Snack"),
-    (["S/Q CHOCO", "SQ BT", "SQ CHK", "SQ CK", "SQ CSW", "CAMPINA"], "Snack"),
-    (["SUPER BUBUR"], "Makanan Instan"),
-    (["ENERGEN"], "Makanan Instan"),
-    (["NUTRIJEL", "NUTRIJELL"], "Makanan Instan"),
+(["INDOMIE", "POP MIE", "MI GEMEZ", "SEDAAP MIE", "SDP MI", "SOTO MI", "IDM M/GORENG"], "Mie Instan"),
 
-    (["MR. BREAD", "MY/R ROTI", "ROTI"], "Roti"),
+(["BISKUAT", "ROMA", "TANGO", "MONDE", "A.T.B MARIE", "CHIKI", "KUSUKA", "KRAKER", "LRSST PILUS", "TOS TOS", "CRUNCHY", "SUKYNCK", "CHOKI CHOKI", "LOTTE", "SERENA", "GERY", "MR.POTATO", "NABATI", "S/Q CHOCO", "SQ BT", "SQ CHK", "SQ CK", "SQ CSW", "CAMPINA"], "Snack"),
 
-    (["AQUA", "AQU"], "Minuman"),
-    (["TEH", "SARIWANGI", "SOSRO", "ULTRA TEH"], "Minuman"),
-    (["KOPI", "NESCAFE", "TOP/COFF", "TIC KPI"], "Minuman"),
-    (["YOU C", "AMUNIZER", "NIPIS MADU"], "Minuman"),
-    (["MARJAN"], "Minuman"),
-    (["C/PANDA", "FOREST GRP"], "Minuman"),
-    (["LEMNRL"], "Minuman"),
-    (["FITMEUP"], "Minuman"),
-    (["G/D INVNL", "LATT"], "Minuman"),
+(["SUPER BUBUR", "ENERGEN", "NUTRIJEL", "NUTRIJELL", "SUNBBR"], "Makanan Instan"),
 
-    (["SUNLIGHT", "SNLIGHT", "G/GEN DET", "DETERJEN"], "Kebersihan Rumah"),
-    (["HIT XPRES", "HIT"], "Kebersihan Rumah"),
-    (["TISSU", "TISSUE", "FACIAL TISSUE", "NICE SOFT", "IDM FAC"], "Kebersihan Rumah"),
-    (["KANTONG PLASTIK", "IDM KTG PLSTK", "REUSABLE", "TAS IDUL", "ALFA ECO", "IDM FIT"], "Kantong & Tas"),
+(["MR. BREAD", "MY/R ROTI", "ROTI"], "Roti"),
 
-    (["SHAMPOO", "SHP", "PANTENE", "H&S"], "Perawatan Tubuh"),
-    (["SABUN", "LUX BW", "BIORE", "NUVO", "CUSSONS"], "Perawatan Tubuh"),
-    (["DEO", "REXONA", "RXONA", "POSH DEO", "NIVEA DEO"], "Perawatan Tubuh"),
-    (["PEPSODENT"], "Perawatan Tubuh"),
-    (["MARINA EDT"], "Perawatan Tubuh"),
-    (["POND", "F/C ROOL"], "Perawatan Tubuh"),
-    (["HERBORIST"], "Perawatan Tubuh"),
-    (["S/PELL BABY", "SOFTENER"], "Perawatan Tubuh"),
+(["AQUA", "AQU", "TEH", "SARIWANGI", "SOSRO", "ULTRA TEH", "KOPI", "NESCAFE", "TOP/COFF", "TIC KPI", "YOU C", "AMUNIZER", "NIPIS MADU", "MARJAN", "C/PANDA", "FOREST GRP", "LEMNRL", "FITMEUP", "G/D INVNL", "LATT", "CASAB", "COL FANT"], "Minuman"),
 
-    (["MAMY", "CHARM"], "Popok & Pembalut"),
+(["SUNLIGHT", "SNLIGHT", "G/GEN DET", "DETERJEN", "HIT XPRES", "HIT", "TISSU", "TISSUE", "FACIAL TISSUE", "NICE SOFT", "IDM FAC"], "Kebersihan Rumah"),
 
-    (["KNZLR", "SUKYNCK", "ROYAL SS"], "Rokok"),
-    (["SUNBBR"], "Obat & Kesehatan"),
-    (["CASAB", "COL FANT"], "Minuman"),
-    (["SELECT BLT"], "Snack"),
+(["KANTONG PLASTIK", "IDM KTG PLSTK", "REUSABLE", "TAS IDUL", "ALFA ECO", "IDM FIT"], "Kantong & Tas"),
+
+(["SHAMPOO", "SHP", "PANTENE", "H&S", "SABUN", "LUX BW", "BIORE", "NUVO", "CUSSONS", "DEO", "REXONA", "RXONA", "POSH DEO", "NIVEA DEO", "PEPSODENT", "MARINA EDT", "POND", "F/C ROOL", "HERBORIST", "S/PELL BABY", "SOFTENER", "MAMY", "CHARM", "SELECT BLT"], "Perawatan Tubuh"),
 ]
 
 
