@@ -1,0 +1,25 @@
+"antecedent","consequent","supp_count","support","conf_count","confidence","lift"
+"{Bahan Pokok, Bumbu & Rempah}","{Ikan & Seafood}",3,0.0968,4,0.75,7.75
+"{Ikan & Seafood}","{Bumbu & Rempah}",3,0.0968,3,1,4.4286
+"{Bahan Pokok, Ikan & Seafood}","{Bumbu & Rempah}",3,0.0968,3,1,4.4286
+"{Buah}","{Bumbu & Rempah}",3,0.0968,4,0.75,3.3214
+"{Ikan & Seafood}","{Bahan Pokok}",3,0.0968,3,1,3.1
+"{Bumbu & Rempah, Ikan & Seafood}","{Bahan Pokok}",3,0.0968,3,1,3.1
+"{Minuman, Snack}","{Kantong & Tas}",3,0.0968,4,0.75,2.9062
+"{Minuman, Snack}","{Susu & Olahan Susu}",3,0.0968,4,0.75,2.5833
+"{Kebersihan Rumah}","{Perawatan Tubuh}",4,0.129,6,0.6667,2.2963
+"{Kantong & Tas, Snack}","{Minuman}",3,0.0968,4,0.75,1.9375
+"{Kantong & Tas, Minuman}","{Snack}",3,0.0968,4,0.75,1.9375
+"{Mie Instan}","{Bahan Pokok}",3,0.0968,5,0.6,1.86
+"{Bumbu & Rempah}","{Bahan Pokok}",4,0.129,7,0.5714,1.7714
+"{Sayuran}","{Bahan Pokok}",4,0.129,7,0.5714,1.7714
+"{Susu & Olahan Susu}","{Snack}",6,0.1935,9,0.6667,1.7222
+"{Daging & Olahan}","{Snack}",4,0.129,6,0.6667,1.7222
+"{Kebersihan Rumah}","{Minuman}",4,0.129,6,0.6667,1.7222
+"{Snack}","{Susu & Olahan Susu}",6,0.1935,12,0.5,1.7222
+"{Kantong & Tas}","{Perawatan Tubuh}",4,0.129,8,0.5,1.7222
+"{Minuman, Susu & Olahan Susu}","{Snack}",3,0.0968,5,0.6,1.55
+"{Susu & Olahan Susu}","{Minuman}",5,0.1613,9,0.5556,1.4352
+"{Kantong & Tas}","{Minuman}",4,0.129,8,0.5,1.2917
+"{Kantong & Tas}","{Snack}",4,0.129,8,0.5,1.2917
+"{Snack, Susu & Olahan Susu}","{Minuman}",3,0.0968,6,0.5,1.2917

@@ -1,0 +1,25 @@
+"rules","support","confidence","lift","itemset"
+"{Bahan Pokok,Bumbu & Rempah} => {Ikan & Seafood}",0.0967741935483871,0.75,7.75,1
+"{Bahan Pokok,Ikan & Seafood} => {Bumbu & Rempah}",0.0967741935483871,1,4.42857142857143,1
+"{Ikan & Seafood} => {Bumbu & Rempah}",0.0967741935483871,1,4.42857142857143,3
+"{Buah} => {Bumbu & Rempah}",0.0967741935483871,0.75,3.32142857142857,4
+"{Bumbu & Rempah,Ikan & Seafood} => {Bahan Pokok}",0.0967741935483871,1,3.1,1
+"{Ikan & Seafood} => {Bahan Pokok}",0.0967741935483871,1,3.1,2
+"{Minuman,Snack} => {Kantong & Tas}",0.0967741935483871,0.75,2.90625,15
+"{Minuman,Snack} => {Susu & Olahan Susu}",0.0967741935483871,0.75,2.58333333333333,19
+"{Kebersihan Rumah} => {Perawatan Tubuh}",0.129032258064516,0.666666666666667,2.2962962962963,8
+"{Kantong & Tas,Snack} => {Minuman}",0.0967741935483871,0.75,1.9375,15
+"{Kantong & Tas,Minuman} => {Snack}",0.0967741935483871,0.75,1.9375,15
+"{Mie Instan} => {Bahan Pokok}",0.0967741935483871,0.6,1.86,6
+"{Bumbu & Rempah} => {Bahan Pokok}",0.129032258064516,0.571428571428571,1.77142857142857,12
+"{Sayuran} => {Bahan Pokok}",0.129032258064516,0.571428571428571,1.77142857142857,13
+"{Daging & Olahan} => {Snack}",0.129032258064516,0.666666666666667,1.72222222222222,5
+"{Kebersihan Rumah} => {Minuman}",0.129032258064516,0.666666666666667,1.72222222222222,7
+"{Kantong & Tas} => {Perawatan Tubuh}",0.129032258064516,0.5,1.72222222222222,10
+"{Susu & Olahan Susu} => {Snack}",0.193548387096774,0.666666666666667,1.72222222222222,21
+"{Snack} => {Susu & Olahan Susu}",0.193548387096774,0.5,1.72222222222222,21
+"{Minuman,Susu & Olahan Susu} => {Snack}",0.0967741935483871,0.6,1.55,19
+"{Susu & Olahan Susu} => {Minuman}",0.161290322580645,0.555555555555556,1.43518518518519,20
+"{Kantong & Tas} => {Minuman}",0.129032258064516,0.5,1.29166666666667,16
+"{Kantong & Tas} => {Snack}",0.129032258064516,0.5,1.29166666666667,17
+"{Snack,Susu & Olahan Susu} => {Minuman}",0.0967741935483871,0.5,1.29166666666667,19

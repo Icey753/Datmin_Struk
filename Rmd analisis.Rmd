@@ -60,6 +60,115 @@ N       <- length(transaksi_kategori)
 MIN_SUP <- PHI / N
 ```
 
+# BAB III: PENGUMPULAN DAN PREPROCESSING DATA
+
+## 3.1 Karakteristik Data Mentah (Struk Belanja)
+Proses penambangan data (*data mining*) dalam studi kasus ini diawali dengan pengumpulan data transaksi berupa struk belanja dari tiga ritel besar di Indonesia, yaitu **Super Indo**, **Alfamart**, dan **Indomaret**. Karakteristik data mentah yang dikumpulkan dari masing-masing ritel memiliki perbedaan format fisik maupun digital, dengan detail sebagai berikut:
+
+1. **Super Indo**: Data diperoleh dalam bentuk digital (*e-receipt*) berformat PDF. Teks dalam berkas ini bersifat *selectable*, sehingga dapat dibaca langsung oleh program tanpa pemrosesan citra. Informasi di dalamnya mencakup nama produk yang terstandar, kuantitas pembelian (*quantity*), harga satuan, subtotal, total belanja, serta tanggal dan waktu transaksi.
+2. **Alfamart & Indomaret**: Data diperoleh dari struk belanja fisik dalam bentuk gambar cetak (foto/citra digital dengan format JPG, JPEG, atau PNG). Teks pada struk fisik ini memerlukan teknologi *Optical Character Recognition* (OCR) untuk diekstraksi ke dalam format teks mentah. Struk belanja fisik memiliki *noise* visual seperti lipatan, degradasi tinta cetak, pencahayaan yang tidak merata, serta penulisan nama produk yang disingkat secara ekstrem demi menghemat area kertas struk.
+
+Setiap struk belanja yang berhasil dikumpulkan memiliki beberapa variabel penting, di antaranya:
+*   `struk_ke`: Indeks penomoran struk.
+*   `sumber`: Nama gerai asal transaksi.
+*   `tanggal_transaksi`: Tanggal terjadinya belanja.
+*   `nama_barang`: Nama produk mentah (masih bercampur dengan kuantitas kemasan seperti *GR*, *ML*, *PCS*, *xX*, dll.).
+
+---
+
+## 3.2 Pipeline Ekstraksi Data (Python)
+Untuk mengotomatisasi ekstraksi teks dari berbagai format struk belanja di atas, dikembangkan pipeline ekstraksi menggunakan bahasa pemrograman Python. Tiga skrip utama dibuat berdasarkan karakteristik masing-masing sumber data:
+
+1. **Ekstraksi PDF Super Indo (`tes.py`)**:
+   Skrip ini menggunakan pustaka `pdfplumber` untuk mengekstrak karakter teks dari file PDF secara langsung. Logika pemrosesan yang diterapkan:
+   *   Menggunakan ekspresi reguler (*Regular Expressions* / Regex) `^(.+?)\s+(\d{1,4})\s+\d{1,3}\.\d{3}\s+\d{1,3}\.\d{3}$` untuk menangkap pola baris produk yang berisi nama barang dan jumlah pembelian (*qty*).
+   *   Melakukan pemfilteran baris (*filtering*) menggunakan daftar `SKIP_PATTERNS` untuk mengabaikan informasi non-produk seperti identitas perusahaan, NPWP, informasi pembayaran, total belanja, serta pesan promosi.
+   *   Mengekstrak tanggal transaksi menggunakan regex pencarian format tanggal `\d{2}[-/]\d{2}[-/]\d{2,4}`.
+   *   Melakukan pembersihan nama produk dengan menghapus angka kuantitas kemasan (seperti berat gram atau mililiter).
+
+2. **Ekstraksi Citra Alfamart (`tes2.py`)**:
+   Skrip ini dirancang untuk memproses citra struk belanja menggunakan teknologi OCR. Mengingat kompleksitas pemrosesan gambar, skrip ini mengintegrasikan fungsi **Windows OCR** bawaan Windows 10/11 melalui skrip PowerShell.
+   *   PowerShell bertindak sebagai jembatan untuk memanggil pustaka runtime Windows (`Windows.Media.Ocr.OcrEngine`) yang efisien dan gratis untuk mengekstrak baris teks dari gambar.
+   *   Hasil OCR berupa array teks dikirim kembali ke Python dalam format JSON.
+   *   Python kemudian melakukan analisis sekuensial: ekstraksi tanggal belanja dan ekstraksi produk belanja yang dibatasi oleh penanda awal transaksi (`bon`) dan penanda akhir transaksi (`STOP_PATTERNS` seperti total item, kembalian, QRIS, dsb.).
+   *   Nama produk dibersihkan dari noise OCR dan angka kuantitas pembelian menggunakan regex.
+
+3. **Ekstraksi Citra Indomaret (`tes3.py`)**:
+   Memiliki alur kerja yang serupa dengan `tes2.py` (memanfaatkan Windows OCR via PowerShell). Perbedaan terletak pada konfigurasi regex dan penanda awal/akhir baris belanja yang disesuaikan dengan tata letak (*layout*) struk khas Indomaret, seperti pendeteksian format tanggal transaksi khusus (`dd.mm.yy-hh:mm/`) serta penyaringan nama produk belanja yang sering diawali dengan karakter peluru atau bullet (`•`).
+
+---
+
+## 3.3 Penggabungan dan Standardisasi Transaksi
+Setelah data produk dari ketiga jenis struk berhasil diekstraksi ke dalam berkas Excel masing-masing (`hasil_barang_receipt.xlsx`, `hasil_barang_alfamaret.xlsx`, dan `hasil_barang_indomaret.xlsx`), langkah berikutnya adalah penggabungan (*data merging*) menggunakan skrip `merge.py`. 
+
+Proses penggabungan ini mencakup beberapa tahap pembersihan dan standardisasi data:
+1. **Penyelarasan Kolom**: Menambahkan kolom `sumber` untuk melacak asal gerai (SuperIndo, Alfamaret, atau Indomaret).
+2. **Standardisasi Tanggal**: Mengubah variasi format tanggal penulisan struk (misalnya `DD/MM/YYYY`, `DD-MM-YY`, atau `DD.MM.YY`) menjadi format standar ISO 8601 (`YYYY-MM-DD`) menggunakan pustaka `pandas`.
+3. **Pengurutan Kronologis**: Menggabungkan seluruh baris data dan mengurutkannya berdasarkan `tanggal_transaksi` dari yang paling lampau hingga paling baru.
+4. **Renumbering Transaksi Global**: Memberikan pengidentifikasi transaksi unik yang baru (`struk_ke` 1 sampai 31) secara berurutan. Produk-produk yang berada dalam satu struk yang sama dari toko dan tanggal yang sama dikelompokkan ke dalam satu ID transaksi global yang unik.
+
+Hasil dari proses ini disimpan ke dalam berkas `hasil_gabungan.xlsx` dengan total dataset gabungan sebanyak **194 baris data** dari **31 transaksi unik** (struk).
+
+---
+
+## 3.4 Klasifikasi Produk Rule-Based
+Nama produk mentah hasil ekstraksi memiliki variasi penamaan yang sangat beragam (misalnya: *INDOMIE GORENG*, *SDP MI SOTO*, *SEDAAP MIE*, dsb.). Guna menyederhanakan analisis asosiasi, dilakukan kategorisasi produk menggunakan pendekatan **klasifikasi berbasis aturan (*rule-based classification*)** melalui skrip `kategorisasi.py`.
+
+Sistem klasifikasi ini mencocokkan setiap nama produk dengan aturan kata kunci (*keyword matching*) yang sensitif terhadap variasi huruf (*case-insensitive*). Skrip memetakan 194 produk belanja ke dalam **19 kategori produk utama** (seperti *Bahan Pokok*, *Sayuran*, *Susu & Olahan Susu*, *Snack*, *Minuman*, dll.). 
+
+Pendekatan *rule-based* ini dipilih daripada metode Machine Learning (seperti Decision Tree atau Naive Bayes) karena beberapa alasan mendasar:
+1. **Volume Data Kecil**: Dataset hanya memiliki 173 produk unik. Model Machine Learning memerlukan jumlah data latih (*training data*) yang sangat besar agar dapat mengklasifikasikan teks dengan akurat.
+2. **Determinisme dan Transparansi**: Aturan pencocokan kata kunci memberikan kepastian mutlak (100% transparan). Pengguna dapat dengan mudah melacak mengapa suatu produk masuk ke kategori tertentu hanya dengan melihat daftar kata kunci.
+3. **Kemudahan Pemeliharaan**: Jika terdapat produk baru, pengguna cukup menambahkan kata kunci baru pada kamus aturan tanpa perlu melakukan proses *retraining* model.
+4. **Akurasi Sempurna**: Dengan ruleset yang dirancang secara cermat, 100% item belanja dalam dataset berhasil diklasifikasikan dengan tepat tanpa ada yang masuk ke kategori fallback (*Lainnya*).
+
+---
+
+## 3.5 Analisis Deskriptif Kategori Produk (Eksplorasi Data)
+Sebelum melangkah ke analisis aturan asosiasi, dilakukan analisis deskriptif untuk memahami ringkasan statistik dataset yang telah dikategorisasikan (`hasil_kategorisasi.xlsx`).
+
+Berikut adalah eksplorasi deskriptif data transaksi menggunakan R:
+
+```{r deskriptif_data, echo=TRUE}
+# Mengubah list transaksi_raw menjadi data frame panjang untuk analisis deskriptif
+df_deskriptif <- data.frame(
+  struk_ke = rep(names(transaksi_raw), sapply(transaksi_raw, length)),
+  kategori = unlist(transaksi_raw),
+  stringsAsFactors = FALSE
+)
+
+# 1. Total transaksi dan barang terjual
+total_transaksi <- length(transaksi_raw)
+total_item_terjual <- nrow(df_deskriptif)
+rata_rata_item <- total_item_terjual / total_transaksi
+
+cat("--- RINGKASAN DATASET ---\n")
+cat("Total Transaksi (N)      :", total_transaksi, "\n")
+cat("Total Item Terjual       :", total_item_terjual, "\n")
+cat("Rata-rata Item per Struk :", round(rata_rata_item, 2), "item/transaksi\n\n")
+
+# 2. Distribusi Frekuensi Kategori Produk
+tabel_frekuensi <- df_deskriptif %>%
+  group_by(kategori) %>%
+  summarise(
+    Frekuensi = n(),
+    Persentase = (n() / total_item_terjual) * 100
+  ) %>%
+  arrange(desc(Frekuensi))
+
+print(tabel_frekuensi)
+```
+
+Visualisasi distribusi frekuensi kategori produk yang paling sering dibeli digambarkan pada grafik di bawah ini:
+
+![Distribusi Frekuensi Kategori Produk](viz_01_frekuensi_kategori.png)
+
+Grafik di atas menunjukkan bahwa kategori produk seperti **Bahan Pokok**, **Snack**, **Minuman**, dan **Sayuran** merupakan kategori dengan frekuensi kemunculan tertinggi di dalam keseluruhan transaksi belanja. Hal ini mengindikasikan bahwa kategori-kategori tersebut berpotensi menjadi itemset yang kuat (*frequent itemsets*) dalam analisis asosiasi selanjutnya.
+
+---
+
+# BAB IV: ANALISIS ATURAN ASOSIASI
+
 ```{r}
 hitung_support_count <- function(itemset, trans_list) {
   sum(sapply(trans_list, function(t) all(itemset %in% t)))
