@@ -1,55 +1,19 @@
+---
+title: "Analisis input"
+output: html_document
+date: "2026-05-26"
+---
+
+```{r setup, include=FALSE}
 packages <- c("arules", "arulesViz", "dplyr", "tidyr",
               "ggplot2", "stringr", "RColorBrewer")
 for (pkg in packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg)
   library(pkg, character.only = TRUE)
 }
+```
 
-tgl_min  <- as.Date("2024-06-08")
-tgl_max  <- as.Date("2026-05-25")
-PHI      <- 3
-MIN_CONF <- 0.5
-MIN_LIFT <- 1.0
-
-transaksi_raw <- list(
-  T1  = c("Bahan Pokok","Sayuran","Susu & Olahan Susu","Minuman","Mie Instan"),
-  T2  = c("Buah","Snack","Sayuran","Susu & Olahan Susu","Bahan Pokok","Bumbu & Rempah","Ikan & Seafood"),
-  T3  = c("Makanan Instan","Buah","Bumbu & Rempah"),
-  T4  = c("Daging & Olahan","Snack","Bahan Pokok"),
-  T5  = c("Perawatan Tubuh","Sayuran"),
-  T6  = c("Ikan & Seafood","Bumbu & Rempah","Bahan Pokok","Sayuran"),
-  T7  = c("Susu & Olahan Susu","Minuman","Perawatan Tubuh","Frozen Food","Kebersihan Rumah"),
-  T8  = c("Buah","Sayuran"),
-  T9  = c("Kantong & Tas","Frozen Food","Makanan Instan","Susu & Olahan Susu","Roti","Sayuran"),
-  T10 = c("Minuman","Snack","Perawatan Tubuh","Bahan Pokok","Sayuran","Kantong & Tas"),
-  T11 = c("Susu & Olahan Susu","Snack"),
-  T12 = c("Perawatan Tubuh","Kantong & Tas"),
-  T13 = c("Kebersihan Rumah","Minuman","Bahan Pokok","Buah","Daging & Olahan",
-          "Bumbu & Rempah","Mie Instan","Ikan & Seafood"),
-  T14 = c("Perawatan Tubuh","Kantong & Tas"),
-  T15 = c("Minuman","Perawatan Tubuh"),
-  T16 = c("Perawatan Tubuh","Kebersihan Rumah"),
-  T17 = c("Snack","Bahan Pokok"),
-  T18 = c("Bahan Pokok"),
-  T19 = c("Kantong & Tas","Bumbu & Rempah","Snack"),
-  T20 = c("Frozen Food","Minuman","Kebersihan Rumah","Perawatan Tubuh","Kantong & Tas"),
-  T21 = c("Bahan Pokok","Bumbu & Rempah","Minuman"),
-  T22 = c("Snack","Susu & Olahan Susu","Minuman","Kantong & Tas"),
-  T23 = c("Minuman"),
-  T24 = c("Minuman","Snack","Daging & Olahan","Susu & Olahan Susu"),
-  T25 = c("Kebersihan Rumah","Kantong & Tas","Makanan Instan","Snack","Minuman","Susu & Olahan Susu"),
-  T26 = c("Daging & Olahan"),
-  T27 = c("Kebersihan Rumah","Perawatan Tubuh","Bahan Pokok","Mie Instan"),
-  T28 = c("Minuman"),
-  T29 = c("Mie Instan","Snack","Roti","Susu & Olahan Susu"),
-  T30 = c("Daging & Olahan","Snack"),
-  T31 = c("Snack","Bumbu & Rempah","Daging & Olahan","Mie Instan")
-)
-
-transaksi_kategori <- lapply(transaksi_raw, unique)
-N       <- length(transaksi_kategori)
-MIN_SUP <- PHI / N
-
+```{r}
 hitung_support_count <- function(itemset, trans_list) {
   sum(sapply(trans_list, function(t) all(itemset %in% t)))
 }
@@ -73,7 +37,9 @@ generate_kandidat <- function(freq_sets) {
   }
   kandidat[!duplicated(sapply(kandidat, paste, collapse = "|"))]
 }
+```
 
+```{r}
 semua_item <- sort(unique(unlist(transaksi_kategori)))
 
 df_F1_all <- data.frame(
@@ -89,7 +55,9 @@ print(df_F1_all, row.names = FALSE)
 
 F1_items <- df_F1_all$item[df_F1_all$count >= PHI]
 F1_sets  <- as.list(F1_items)
+```
 
+```{r}
 C2 <- combn(sort(F1_items), 2, simplify = FALSE)
 
 df_C2 <- data.frame(
@@ -100,12 +68,15 @@ df_C2 <- data.frame(
 df_C2$support <- df_C2$count / N
 df_C2         <- df_C2[order(-df_C2$count), ]
 
+
 print(head(df_C2, 20), row.names = FALSE)
 
 F2_idx  <- df_C2$count >= PHI
 F2_str  <- df_C2$itemset_str[F2_idx]
 F2_sets <- C2[match(F2_str, sapply(C2, fmt_itemset))]
+```
 
+```{r}
 F3_sets <- list(); df_C3 <- data.frame(); F3_str <- character(0)
 
 C3 <- generate_kandidat(F2_sets)
@@ -125,7 +96,9 @@ if (length(C3) > 0) {
   F3_str  <- df_C3$itemset_str[F3_idx]
   F3_sets <- C3[match(F3_str, sapply(C3, fmt_itemset))]
 }
+```
 
+```{r}
 F4_sets <- list()
 
 if (length(F3_sets) > 0) {
@@ -139,14 +112,16 @@ if (length(F3_sets) > 0) {
     df_C4$support <- df_C4$count / N
     df_C4         <- df_C4[order(-df_C4$count), ]
     
-
+       
     print(df_C4, row.names = FALSE)
     
     F4_idx  <- df_C4$count >= PHI
     F4_sets <- C4[match(df_C4$itemset_str[F4_idx], sapply(C4, fmt_itemset))]
   }
 }
+```
 
+```{r}
 all_freq_sets <- c(F2_sets, F3_sets, F4_sets)
 all_freq_sets <- all_freq_sets[!sapply(all_freq_sets, is.null)]
 
@@ -193,13 +168,15 @@ if (length(rules_list) > 0) {
   df_rules_manual <- df_rules_manual[order(-df_rules_manual$lift,
                                            -df_rules_manual$confidence), ]
   rownames(df_rules_manual) <- NULL
-  
+
 
   print(df_rules_manual)
 } else {
   df_rules_manual <- data.frame()
 }
+```
 
+```{r}
 trans_arules <- as(transaksi_kategori, "transactions")
 
 rules_apr <- apriori(
@@ -213,7 +190,9 @@ if (length(rules_apr) > 0) {
 
   inspect(head(sort(rules_apr, by = "lift"), 10))
 }
+```
 
+```{r}
 fi_eclat <- eclat(
   trans_arules,
   parameter = list(supp = MIN_SUP, minlen = 2, maxlen = 10),
@@ -230,7 +209,9 @@ if (length(fi_eclat) > 0) {
     inspect(head(sort(rules_fpg, by = "lift"), 10))
   }
 }
+```
 
+```{r}
 n_manual <- nrow(df_rules_manual)
 n_apr    <- length(rules_apr)
 n_fpg    <- if (!is.null(rules_fpg)) length(rules_fpg) else 0
@@ -241,7 +222,9 @@ tabel_perbandingan <- data.frame(
 )
 
 print(tabel_perbandingan, row.names = FALSE)
+```
 
+```{r}
 pal <- RColorBrewer::brewer.pal(8, "Set2")
 
 png("viz_01_frekuensi_kategori.png", width = 1000, height = 600, res = 120)
@@ -288,6 +271,7 @@ print(
 )
 dev.off()
 
+
 if (n_manual > 0) {
   write.csv(df_rules_manual, "rules_apriori_manual.csv", row.names = FALSE)
 }
@@ -303,3 +287,4 @@ if (!is.null(rules_fpg) && length(rules_fpg) > 0) {
     "rules_fpgrowth.csv", row.names = FALSE
   )
 }
+```
